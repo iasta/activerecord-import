@@ -311,12 +311,12 @@ class ActiveRecord::Base
             end
           end
 
-          num_inserts = if valid.empty? || options[:all_or_none] && failed_instances.any?
-                          0
-                        else
-                          import_without_validations_or_callbacks( column_names, valid, options )
-                        end
-          ActiveRecord::Import::Result.new(failed_instances, num_inserts)
+          (num_inserts, ids) = if array_of_attributes.empty? || options[:all_or_none] && failed_instances.any?
+                                 [0,[]]
+                               else
+                                 import_without_validations_or_callbacks( column_names, array_of_attributes, options )
+                               end
+          ActiveRecord::Import::Result.new(failed_instances, num_inserts, ids)
         else
           import_with_validations( column_names, array_of_attributes, options )
         end
