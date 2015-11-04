@@ -494,7 +494,11 @@ class ActiveRecord::Base
             if column.respond_to?(:type_cast_from_user)                         # Rails 4.2 and higher
               connection_memo.quote(column.type_cast_from_user(val), column)
             else
-              connection_memo.quote(column.type_cast(val), column)              # Rails 3.1, 3.2, and 4.1
+              if serialized_attributes.include?(column.name)
+                connection_memo.quote(serialized_attributes[column.name].dump(val), column)
+              else
+                connection_memo.quote(column.type_cast(val), column)              # Rails 3.1, 3.2, and 4.1
+              end
             end
           end
         end
